@@ -1,0 +1,109 @@
+id: gcp_data
+namespace: zoomcamp
+description: "Load Amazon sales data to GCP"
+
+variables:
+  data: "{{outputs.extract.outputFiles['amazon.csv']}}"
+  file: "amazon.csv"
+  gcs_file: "gs://{{kv('GCP_BUCKET_NAME')}}/{{vars.file}}"
+  table: "{{kv('GCP_DATASET')}}.amazon_sales"
+
+tasks:
+  - id: set_label
+    type: io.kestra.plugin.core.execution.Labels
+    labels:
+      file: "{{vars.file}}"
+
+  - id: extract
+    type: io.kestra.plugin.scripts.shell.Commands
+    outputFiles:
+      - "*.csv"
+    taskRunner:
+      type: io.kestra.plugin.core.runner.Process
+    commands:
+      - wget -qO "amazon.csv" https://raw.githubusercontent.com/Jingyuan805/dezoomcamp---2025/7d4b5ea3738cf4bfc9f546038fa7d1a2892a496d/amazon.csv
+
+
+  - id: upload_to_gcs
+    type: io.kestra.plugin.gcp.gcs.Upload
+    from: "{{vars.data}}"
+    to: "{{vars.gcs_file}}"
+
+
+  - id: create_table
+    type: io.kestra.plugin.gcp.bigquery.Query
+    sql: |
+      CREATE TABLE IF NOT EXISTS `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.amazon_sales` (
+          product_id STRING OPTIONS (description = 'Product ID'),
+          product_name STRING OPTIONS (description = 'Name of the Product'),
+          category STRING OPTIONS (description = 'Category of the Product'),
+          discounted_price STRING OPTIONS (description = 'Discounted Price of the Product'),
+          actual_price STRING OPTIONS (description = 'Actual Price of the Product'),
+          discount_percentage STRING OPTIONS (description = 'Percentage of Discount for the Product'),
+          rating STRING OPTIONS (description = 'Rating of the Product'),
+          rating_count INTEGER OPTIONS (description = 'Number of people who voted for the Amazon rating'),
+          about_product STRING OPTIONS (description = 'Description about the Product'),
+          user_id STRING OPTIONS (description = 'ID of the user who wrote review for the Product'),
+          user_name STRING OPTIONS (description = 'Name of the user who wrote review for the Product'),
+          review_id STRING OPTIONS (description = 'ID of the user review'),
+          review_title STRING OPTIONS (description = 'Short review'),
+          review_content STRING OPTIONS (description = 'Long review'),
+          img_link STRING OPTIONS (description = 'Image Link of the Product'),
+          product_link STRING OPTIONS (description = 'Official Website Link of the Product')
+      );
+
+  - id: table_ext
+    type: io.kestra.plugin.gcp.bigquery.Query
+    sql: |
+      CREATE OR REPLACE EXTERNAL TABLE `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.amazon_sales_ext`
+      (
+          product_id STRING OPTIONS (description = 'Product ID'),
+          product_name STRING OPTIONS (description = 'Name of the Product'),
+          category STRING OPTIONS (description = 'Category of the Product'),
+          discounted_price STRING OPTIONS (description = 'Discounted Price of the Product'),
+          actual_price STRING OPTIONS (description = 'Actual Price of the Product'),
+          discount_percentage STRING OPTIONS (description = 'Percentage of Discount for the Product'),
+          rating STRING OPTIONS (description = 'Rating of the Product'),
+          rating_count INTEGER OPTIONS (description = 'Number of people who voted for the Amazon rating'),
+          about_product STRING OPTIONS (description = 'Description about the Product'),
+          user_id STRING OPTIONS (description = 'ID of the user who wrote review for the Product'),
+          user_name STRING OPTIONS (description = 'Name of the user who wrote review for the Product'),
+          review_id STRING OPTIONS (description = 'ID of the user review'),
+          review_title STRING OPTIONS (description = 'Short review'),
+          review_content STRING OPTIONS (description = 'Long review'),
+          img_link STRING OPTIONS (description = 'Image Link of the Product'),
+          product_link STRING OPTIONS (description = 'Official Website Link of the Product')
+      )
+      OPTIONS (
+          format = 'CSV',
+          uris = ['gs://{{kv("GCP_BUCKET_NAME")}}/{{vars.file}}'],
+          skip_leading_rows = 1,
+          ignore_unknown_values = TRUE
+      );
+
+  - id: table_tmp
+    type: io.kestra.plugin.gcp.bigquery.Query
+    sql: |
+      CREATE OR REPLACE TABLE `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.amazon_sales`
+      AS
+      SELECT
+        CAST(REGEXP_REPLACE(discounted_price, r'[^\d.]', '') AS NUMERIC) AS discounted_price_clean,
+        CAST(REGEXP_REPLACE(actual_price, r'[^\d.]', '') AS NUMERIC) AS actual_price_clean,
+        0.01*CAST(REGEXP_REPLACE(discount_percentage, r'[^\d.]', '') AS NUMERIC) AS discount_percentage_clean,
+        CAST(NULLIF(REGEXP_REPLACE(rating, r'[^0-9.]', ''), '') AS FLOAT64) AS rating_clean,
+        *
+      FROM `{{kv('GCP_PROJECT_ID')}}.{{kv('GCP_DATASET')}}.amazon_sales_ext`;
+
+    
+  - id: purge_files
+    type: io.kestra.plugin.core.storage.PurgeCurrentExecutionFiles
+    description: If you'd like to explore Kestra outputs, disable it.
+    disabled: false
+
+pluginDefaults:
+  - type: io.kestra.plugin.gcp
+    values:
+      serviceAccount: "{{kv('GCP_CREDS')}}"
+      projectId: "{{kv('GCP_PROJECT_ID')}}"
+      location: "{{kv('GCP_LOCATION')}}"
+      bucket: "{{kv('GCP_BUCKET_NAME')}}"
