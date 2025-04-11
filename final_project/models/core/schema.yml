@@ -1,6 +1,0 @@
-version: 2
-
-models:
-  - name: aggregate
-    description: >
-      The table contains ratings and price for each product category.
