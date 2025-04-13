@@ -97,11 +97,11 @@ unzip # unzip if necessary
 ## Use Kestra to ingest data
 ---
 
-* Create the (docker-compose file)[https://github.com/Jingyuan805/Amazon-Sales-DE-Zoomcamp2025/blob/main/kestra/docker-compose.yml] 
+* Create the [docker-compose file](https://github.com/Jingyuan805/Amazon-Sales-DE-Zoomcamp2025/blob/main/kestra/docker-compose.yml)
 ```bash
 docker-compose up -d
 ```
-* Create the (.yaml files)[https://github.com/Jingyuan805/Amazon-Sales-DE-Zoomcamp2025/tree/main/kestra/flows] to ingest data.
+* Create the [.yaml files](https://github.com/Jingyuan805/Amazon-Sales-DE-Zoomcamp2025/tree/main/kestra/flows) to ingest data.
 * Add key-values in Kestra. Recommended key values are fcp_creds, gcp_project_id, gcp_location, gcp_bucket_name, gcp_dataset. They can be set up by code (gcp_kv file). For the sake of safety, I didn't include gcp_kv file in the folder.
 * Key values are now variables. They can be referenced in other files.
 * Execute all .yaml files to ingest data to GCS.
@@ -134,12 +134,12 @@ SELECT * FROM [project_nmae].[schema].[table_name_ext];
 
 ### Build the DBT model
 
-* Set up DBT cloud with bigquery and connect to a github repo. Detailed instructions can be found (here)[https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/04-analytics-engineering/dbt_cloud_setup.md].
+* Set up DBT cloud with bigquery and connect to a github repo. Detailed instructions can be found [here](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/04-analytics-engineering/dbt_cloud_setup.md).
 * Got to Cloud IDE. Create a branch and initialize the project.
 * Update dbt.project.yml. Change project names, etc.
 * Go to "models". For schema.yml files, update variables to fit the dataset. Update .sql files to change the model if necessary.
 * Use dbt build to run the model.
-* Final document should be similar to (this)[https://xr623.us1.dbt.com/accounts/70471823429803/develop/70471823731440/docs/index.html#!/overview]. 
+* Final document should be similar to [this](https://xr623.us1.dbt.com/accounts/70471823429803/develop/70471823731440/docs/index.html#!/overview). 
 
 ### Deployment
 
