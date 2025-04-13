@@ -42,8 +42,8 @@ The final data pipeline and dashboard are fully reusable. They support ongoing p
 
 ![Visualization](images/visualization.png)
 
-👉 [Dashboard Link](https://lookerstudio.google.com/reporting/5f70d065-0f8a-45a0-8bf6-fbf4fa6423be)
-👉 [DBT dashboard link](https://xr623.us1.dbt.com/accounts/70471823429803/develop/70471823731216/docs/index.html#!/source_list/staging)
+* 👉 [Dashboard Link](https://lookerstudio.google.com/reporting/5f70d065-0f8a-45a0-8bf6-fbf4fa6423be)
+* 👉 [DBT doc link](https://xr623.us1.dbt.com/accounts/70471823429803/develop/70471823731216/docs/index.html#!/source_list/staging)
 
 ---
 
