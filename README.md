@@ -49,7 +49,7 @@ The final data pipeline and dashboard are fully reusable. They support ongoing p
 
 ## 📁 Reproduction Guide
 
-To reproduce this project in the cloud, follow the steps in [`REPRODUCE.md`](./REPRODUCE.md).
+To reproduce this project in the cloud, follow the steps in [`reproduce.md`](./reproduce.md).
 
 ---
 
