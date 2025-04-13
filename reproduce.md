@@ -139,7 +139,7 @@ SELECT * FROM [project_nmae].[schema].[table_name_ext];
 * Update dbt.project.yml. Change project names, etc.
 * Go to "models". For schema.yml files, update variables to fit the dataset. Update .sql files to change the model if necessary.
 * Use dbt build to run the model.
-* Final document should be similar to [this](https://xr623.us1.dbt.com/accounts/70471823429803/develop/70471823731440/docs/index.html#!/overview). 
+* Everything should be successful. Final document should be similar to [this](https://xr623.us1.dbt.com/accounts/70471823429803/develop/70471823731440/docs/index.html#!/overview). 
 
 ### Deployment
 
